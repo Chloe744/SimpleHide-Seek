@@ -1,4 +1,4 @@
-package at.game.hideandseekgame.room.types;
+package at.game.hideandseekgame.room;
 
 import at.game.hideandseekgame.room.types.RoomType;
 
@@ -8,7 +8,7 @@ public interface Room {
     int roomSizeY = 0;
     boolean hasObstacles = false;
 
-    void createEntity(int x, int y);
+    void create();
 
 
 }
