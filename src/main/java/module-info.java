@@ -7,7 +7,6 @@ module at.game.hideandseekgame {
 
     opens at.game.hideandseekgame to javafx.fxml;
     exports at.game.hideandseekgame;
-    exports at.game.hideandseekgame.room;
     opens at.game.hideandseekgame.room to javafx.fxml;
     exports at.game.hideandseekgame.room.types;
     opens at.game.hideandseekgame.room.types to javafx.fxml;
