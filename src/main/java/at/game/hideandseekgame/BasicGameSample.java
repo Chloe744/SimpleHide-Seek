@@ -27,8 +27,7 @@ public class BasicGameSample extends GameApplication {
 
     @Override
     protected void initGame() {
-        NormalRoom room = new NormalRoom();
-        room.create();
+
     }
 
     public static void main(String[] args) {
