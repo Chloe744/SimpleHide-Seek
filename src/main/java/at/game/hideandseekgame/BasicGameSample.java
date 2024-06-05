@@ -4,6 +4,7 @@ package at.game.hideandseekgame;/*
  * See LICENSE for details.
  */
 
+import at.game.hideandseekgame.room.types.NormalRoom;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.dsl.FXGL;
@@ -26,7 +27,8 @@ public class BasicGameSample extends GameApplication {
 
     @Override
     protected void initGame() {
-       // Room.createRoom();
+        NormalRoom room = new NormalRoom();
+        room.create();
     }
 
     public static void main(String[] args) {

@@ -7,4 +7,6 @@ public class SmallRoom implements Room {
     public void create() {
 
     }
+
+
 }
