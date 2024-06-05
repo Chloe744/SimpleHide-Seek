@@ -38,6 +38,7 @@ public class BasicGameSample extends GameApplication {
 
         settings.getAchievements().add(new Achievement("Survivalist", "Survive for 10 Seconds", "", 0));
         settings.getAchievements().add(new Achievement("Stand back up", "Die for the first time", "", 1));
+
     }
 
     @Override
