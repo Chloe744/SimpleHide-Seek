@@ -31,25 +31,12 @@ public class BasicGameSample extends GameApplication {
         settings.setFullScreenAllowed(true);
         settings.setEnabledMenuItems(EnumSet.of(MenuItem.EXTRA));
         settings.getCredits().addAll(Arrays.asList(
-                "Short Name - Lead Programmer",
-                "LongLongLongLongLongLongLong Name - Programmer",
-                "V Short - Artist",
-                "Medium-Hyphen Name - Designer",
-                "More Credits - 111",
-                "More Credits - 222",
-                "More Credits - 333",
-                "More Credits - 444",
-                "More Credits - 444",
-                "Example of a credit name that will definitely not fit on the screen using default font",
-                "More Credits - 444",
-                "More Credits - 444",
-                "More Credits - 555",
-                "More Credits - 666",
-                "More Credits - 777"
+                "Karo - Programmer",
+                "André - Programmer"
         ));
 
-        settings.getAchievements().add(new Achievement("Name", "description", "", 0));
-        settings.getAchievements().add(new Achievement("Name2", "description2", "", 1));
+        settings.getAchievements().add(new Achievement("Survivalist", "Survive for 10 Seconds", "", 0));
+        settings.getAchievements().add(new Achievement("Stand back up", "Die for the first time", "", 1));
     }
 
     @Override
