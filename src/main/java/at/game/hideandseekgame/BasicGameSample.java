@@ -11,6 +11,11 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.MenuItem;
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.input.Input;
+import com.almasb.fxgl.input.UserAction;
+import javafx.geometry.Point2D;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -18,10 +23,14 @@ import javafx.scene.text.Text;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import static com.almasb.fxgl.dsl.FXGLForKtKt.entityBuilder;
+import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
+
 /**
  * @author Almas Baimagambetov (almaslvl@gmail.com)
  */
 public class BasicGameSample extends GameApplication {
+    public static Entity player;
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(800);
@@ -42,14 +51,21 @@ public class BasicGameSample extends GameApplication {
     }
 
     @Override
-    protected void initGame() {
-        FXGL.entityBuilder()
-                .at(300, 300)
-                .view(new Rectangle(100, 100, Color.BLUE))
-                .view(new Text("Example"))
-                .buildAndAttach();
+    protected void initInput() {
+        FXGL.onKey(KeyCode.W, "up", () -> player.translateY(-5));
+        FXGL.onKey(KeyCode.S, "down", () -> player.translateY(5));
+        FXGL.onKey(KeyCode.A, "left", () -> player.translateX(-5));
+        FXGL.onKey(KeyCode.D, "right", () -> player.translateX(5));
+
     }
 
+    @Override
+    protected void initGame() {
+        player = FXGL.entityBuilder()
+                .at(300,300)
+                .view(new Rectangle(25, 25, Color.BLUE))
+                .buildAndAttach();
+    }
     public static void main(String[] args) {
         launch(args);
     }
