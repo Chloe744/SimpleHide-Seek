@@ -31,6 +31,7 @@ import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
  */
 public class BasicGameSample extends GameApplication {
     public static Entity player;
+    public static Entity enemy;
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(800);
@@ -57,6 +58,8 @@ public class BasicGameSample extends GameApplication {
         FXGL.onKey(KeyCode.A, "left", () -> player.translateX(-5));
         FXGL.onKey(KeyCode.D, "right", () -> player.translateX(5));
 
+
+
     }
 
     @Override
@@ -65,6 +68,22 @@ public class BasicGameSample extends GameApplication {
                 .at(300,300)
                 .view(new Rectangle(25, 25, Color.BLUE))
                 .buildAndAttach();
+
+
+        enemy = FXGL.entityBuilder()
+                .at(100,100)
+                .view(new Rectangle(25, 25, Color.RED))
+                .buildAndAttach();
+
+
+
+    }
+
+
+    @Override
+    protected void onUpdate(double tpf) {
+        Point2D directionToPlayer = player.getPosition().subtract(enemy.getPosition()).normalize().multiply(60 * tpf);
+        enemy.translate(directionToPlayer);
     }
     public static void main(String[] args) {
         launch(args);
