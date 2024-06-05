@@ -29,6 +29,7 @@ public class BasicGameSample extends GameApplication {
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
         settings.setFullScreenAllowed(true);
+        settings.setTitle("Hide & Seek Game");
         settings.setEnabledMenuItems(EnumSet.of(MenuItem.EXTRA));
         settings.getCredits().addAll(Arrays.asList(
                 "Karo - Programmer",
