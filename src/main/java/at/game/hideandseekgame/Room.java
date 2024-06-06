@@ -1,5 +1,5 @@
 package at.game.hideandseekgame;
 
-public enum RoomType {
+public enum Room {
     Room;
 }

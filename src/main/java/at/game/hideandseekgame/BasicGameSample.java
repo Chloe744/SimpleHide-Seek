@@ -39,6 +39,7 @@ public class BasicGameSample extends GameApplication {
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
         settings.setFullScreenAllowed(true);
+        settings.setFullScreenFromStart(true);
         settings.setTitle("Hide & Seek Game");
         settings.setEnabledMenuItems(EnumSet.of(MenuItem.EXTRA));
         settings.getCredits().addAll(Arrays.asList(
@@ -82,7 +83,7 @@ public class BasicGameSample extends GameApplication {
 
     @Override
     protected void onUpdate(double tpf) {
-        Point2D directionToPlayer = player.getPosition().subtract(enemy.getPosition()).normalize().multiply(60 * tpf);
+        Point2D directionToPlayer = player.getPosition().subtract(enemy.getPosition()).normalize().multiply(200 * tpf);
         enemy.translate(directionToPlayer);
     }
     public static void main(String[] args) {
