@@ -40,16 +40,29 @@ public class BasicGameSample extends GameApplication {
 
     }
 
-    @Override
-    protected void initInput() {
-        FXGL.onKey(KeyCode.W, "up", () -> player.translateY(-5));
-        FXGL.onKey(KeyCode.S, "down", () -> player.translateY(5));
-        FXGL.onKey(KeyCode.A, "left", () -> player.translateX(-5));
-        FXGL.onKey(KeyCode.D, "right", () -> player.translateX(5));
-
-
-
-    }
+  @Override
+  protected void initInput() {
+      FXGL.onKey(KeyCode.W, "up", () -> {
+          if (player.getY() > 0) {
+              player.translateY(-5);
+          }
+      });
+      FXGL.onKey(KeyCode.S, "down", () -> {
+          if (player.getY() < FXGL.getAppHeight()-25) {
+              player.translateY(5);
+          }
+      });
+      FXGL.onKey(KeyCode.A, "left", () -> {
+          if (player.getX() > 0) {
+              player.translateX(-5);
+          }
+      });
+      FXGL.onKey(KeyCode.D, "right", () -> {
+          if (player.getX()+player.getWidth() < FXGL.getAppWidth()-25) {
+              player.translateX(5);
+          }
+      });
+  }
 
     @Override
     protected void initGame() {
