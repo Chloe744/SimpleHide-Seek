@@ -5,30 +5,18 @@
  */
 
 package at.game.hideandseekgame;
-
 import com.almasb.fxgl.achievement.Achievement;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.MenuItem;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.input.Input;
-import com.almasb.fxgl.input.UserAction;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
-
 import java.util.Arrays;
 import java.util.EnumSet;
-
-import static com.almasb.fxgl.dsl.FXGLForKtKt.entityBuilder;
-import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
-
-/**
- * @author Almas Baimagambetov (almaslvl@gmail.com)
- */
 public class BasicGameSample extends GameApplication {
     public static Entity player;
     public static Entity enemy;
