@@ -1,39 +1,26 @@
-/*
- * FXGL - JavaFX Game Library. The MIT License (MIT).
- * Copyright (c) AlmasB (almaslvl@gmail.com).
- * See LICENSE for details.
- */
-
 package at.game.hideandseekgame;
+
 import com.almasb.fxgl.achievement.Achievement;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.MenuItem;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.fxgl.physics.PhysicsComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
-import javafx.util.Duration;
 
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
-import static com.almasb.fxgl.dsl.FXGL.run;
-import static com.almasb.fxgl.dsl.FXGLForKtKt.getPhysicsWorld;
-
 public class BasicGameSample extends GameApplication {
     public static Entity player;
     public static Entity enemy;
-    public static Entity vision;
-    private boolean playerInVision = false;
+    private static Entity VISIONCONE;
 
+    //Initialise settings
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(800);
@@ -51,97 +38,69 @@ public class BasicGameSample extends GameApplication {
 
         settings.getAchievements().add(new Achievement("Survivalist", "Survive for 10 Seconds", "", 0));
         settings.getAchievements().add(new Achievement("Stand back up", "Die for the first time", "", 1));
-
     }
 
-    @Override
-    protected void initInput() {
-        FXGL.onKey(KeyCode.W, "up", () -> {
-            if (player.getY() > 0) {
-                player.translateY(-8);
-            }
-        });
-        FXGL.onKey(KeyCode.S, "down", () -> {
-            if (player.getY() < FXGL.getAppHeight()-25) {
-                player.translateY(8);
-            }
-        });
-        FXGL.onKey(KeyCode.A, "left", () -> {
-            if (player.getX() > 0) {
-                player.translateX(-8);
-            }
-        });
-        FXGL.onKey(KeyCode.D, "right", () -> {
-            if (player.getX()+player.getWidth() < FXGL.getAppWidth()-25) {
-                player.translateX(8);
-            }
-        });
-    }
-
+    //Creates the player, enemy and visioncone entities
     @Override
     protected void initGame() {
-        // Erstellung des Spielers
-        player = entityBuilder()
-                .view(new Rectangle(25, 25, Color.BLUE))
-                .with(new CollidableComponent(true))
+        player = FXGL.entityBuilder()
                 .at(300, 300)
+                .view(new Rectangle(25, 25, Color.BLUE))
                 .buildAndAttach();
 
-        // Erstellung des Gegners
-        enemy = entityBuilder()
-                .view(new Rectangle(25, 25, Color.RED))
-                .with(new CollidableComponent(true))
+        Polygon enemyShape = new Polygon();
+        enemyShape.getPoints().addAll(
+                20.0, 40.0,
+                0.0, 0.0,
+                -20.0, 40.0
+        );
+        enemyShape.setFill(Color.RED);
+
+        enemy = FXGL.entityBuilder()
                 .at(100, 100)
+                .view(enemyShape)
                 .buildAndAttach();
 
-        // Erstellung des Sichtfeld-Dreiecks
-        Polygon visionTriangle = new Polygon();
-        visionTriangle.getPoints().addAll(new Double[]{
-                0.0, 0.0,  // Basispunkt in der Mitte der Enemy-Box
-                -100.0, -200.0,  // Rechter Punkt
-                100.0, -200.0   // Linker Punkt
-        });
+        Polygon visionShape = new Polygon();
+        visionShape.getPoints().addAll(
+                0.0, 0.0,
+                100.0, 50.0,
+                100.0, -50.0
+        );
+        visionShape.setFill(Color.rgb(255, 0, 0, 0.3));
 
-        vision = entityBuilder()
-                .view(visionTriangle)
-                .with(new CollidableComponent(true))
-                .at(enemy.getX(), enemy.getY())
-                .zIndex(-1)
+        VISIONCONE = FXGL.entityBuilder()
+                .at(enemy.getPosition())
+                .view(visionShape)
                 .buildAndAttach();
-
-        run(() -> {
-            if(enemy != null && vision != null && player != null) {
-                Point2D enemyCenter = enemy.getCenter();
-                Point2D playerCenter = player.getCenter();
-                Point2D direction = playerCenter.subtract(enemyCenter);
-                double angle = Math.atan2(direction.getY(), direction.getX()) * 180 / Math.PI + 90;
-                vision.setRotation(angle); // rotate the vision
-                vision.setPosition(enemyCenter.add(12.5, 12.5));
-            }
-        }, Duration.seconds(0.017)); // 60 FPS
-
     }
 
+    //initialises the input
     @Override
-    protected void initPhysics() {
-        FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.PLAYER, EntityType.VISION) {
-
-
-            @Override
-            protected void onCollisionBegin(Entity player, Entity coin) {
-                playerInVision = true;
-            }
-        });
+    protected void initInput() {
+        FXGL.onKey(KeyCode.W, "up", () -> player.translateY(-5));
+        FXGL.onKey(KeyCode.S, "down", () -> player.translateY(5));
+        FXGL.onKey(KeyCode.A, "left", () -> player.translateX(-5));
+        FXGL.onKey(KeyCode.D, "right", () -> player.translateX(5));
     }
 
     @Override
     protected void onUpdate(double tpf) {
-        if (playerInVision) {
-            Point2D directionToPlayer = player.getPosition().subtract(enemy.getPosition()).normalize().multiply(200 * tpf);
-            enemy.translate(directionToPlayer);
-        }
+        //Makes the enemy follow the player
+        Point2D directionToPlayer = player.getPosition().subtract(enemy.getPosition()).normalize().multiply(200 * tpf);
+        enemy.translate(directionToPlayer);
+
+        // Update the vision cone position and rotation
+        Point2D enemyPos = enemy.getPosition();
+        VISIONCONE.setPosition(enemyPos);
+
+        //Changes the angle/rotation of both the visioncone and enemy
+        double angle = Math.toDegrees(Math.atan2(directionToPlayer.getY(), directionToPlayer.getX()));
+        VISIONCONE.setRotation(angle);
+        enemy.setRotation(angle);
     }
 
+    //launches the application
     public static void main(String[] args) {
         launch(args);
     }
