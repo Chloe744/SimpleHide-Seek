@@ -6,19 +6,30 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.MenuItem;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.physics.CollisionHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
+import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Random;
 
 public class BasicGameSample extends GameApplication {
-    public static Entity player;
-    public static Entity enemy;
-    private static Entity VISIONCONE;
+    private Entity player;
+    private Entity enemy;
+    private Entity VISIONCONE;
+    private Point2D target;
+    private Random rand = new Random();
+    private double rotationTimer = 0;
+    private double additionalRotation = 0;
+    private int rotationDirection = 1;
 
     //Initialise settings
     @Override
@@ -40,64 +51,104 @@ public class BasicGameSample extends GameApplication {
         settings.getAchievements().add(new Achievement("Stand back up", "Die for the first time", "", 1));
     }
 
-    //Creates the player, enemy and visioncone entities
     @Override
     protected void initGame() {
         player = FXGL.entityBuilder()
+                .type(EntityType.PLAYER)
                 .at(300, 300)
-                .view(new Rectangle(25, 25, Color.BLUE))
+                .viewWithBBox(new Rectangle(25, 25, Color.BLUE))
+                .with(new CollidableComponent(true))
+                .collidable()
                 .buildAndAttach();
-
-        Polygon enemyShape = new Polygon();
-        enemyShape.getPoints().addAll(
-                20.0, 40.0,
-                0.0, 0.0,
-                -20.0, 40.0
-        );
-        enemyShape.setFill(Color.RED);
 
         enemy = FXGL.entityBuilder()
+                .type(EntityType.ENEMY)
                 .at(100, 100)
-                .view(enemyShape)
+                .viewWithBBox(new Circle(10, Color.RED))
+                .with(new CollidableComponent(true))
+                .collidable()
                 .buildAndAttach();
 
-        Polygon visionShape = new Polygon();
-        visionShape.getPoints().addAll(
-                0.0, 0.0,
-                100.0, 50.0,
-                100.0, -50.0
-        );
+        Polygon visionShape = new Polygon(0.0, 0.0, 100.0, 50.0, 100.0, -50.0);
         visionShape.setFill(Color.rgb(255, 0, 0, 0.3));
 
         VISIONCONE = FXGL.entityBuilder()
-                .at(enemy.getPosition())
-                .view(visionShape)
+                .type(EntityType.VISIONCONE)
+                .at(enemy.getX(), enemy.getY())
+                .viewWithBBox(visionShape)
+                .with(new CollidableComponent(true))
+                .collidable()
                 .buildAndAttach();
-    }
 
+        pickNewTarget();
+    }
     //initialises the input
     @Override
     protected void initInput() {
-        FXGL.onKey(KeyCode.W, "up", () -> player.translateY(-5));
-        FXGL.onKey(KeyCode.S, "down", () -> player.translateY(5));
-        FXGL.onKey(KeyCode.A, "left", () -> player.translateX(-5));
-        FXGL.onKey(KeyCode.D, "right", () -> player.translateX(5));
+        FXGL.onKey(KeyCode.W, "up", () -> {
+            if (player.getY() > 0) {
+                player.translateY(-8);
+            }
+        });
+        FXGL.onKey(KeyCode.S, "down", () -> {
+            if (player.getY() < FXGL.getAppHeight()-25) {
+                player.translateY(8);
+            }
+        });
+        FXGL.onKey(KeyCode.A, "left", () -> {
+            if (player.getX() > 0) {
+                player.translateX(-8);
+            }
+        });
+        FXGL.onKey(KeyCode.D, "right", () -> {
+            if (player.getX()+player.getWidth() < FXGL.getAppWidth()-25) {
+                player.translateX(8);
+            }
+        });
+    }
+
+    private void pickNewTarget() {
+        target = new Point2D(rand.nextInt(800), rand.nextInt(600));
     }
 
     @Override
     protected void onUpdate(double tpf) {
-        //Makes the enemy follow the player
-        Point2D directionToPlayer = player.getPosition().subtract(enemy.getPosition()).normalize().multiply(200 * tpf);
-        enemy.translate(directionToPlayer);
+        if (target != null && enemy.getPosition().distance(target) < 5) {
+            pickNewTarget();
+        }
 
-        // Update the vision cone position and rotation
-        Point2D enemyPos = enemy.getPosition();
-        VISIONCONE.setPosition(enemyPos);
+        Point2D directionToTarget = target.subtract(enemy.getPosition()).normalize().multiply(100 * tpf);
+        enemy.translate(directionToTarget);
 
-        //Changes the angle/rotation of both the visioncone and enemy
-        double angle = Math.toDegrees(Math.atan2(directionToPlayer.getY(), directionToPlayer.getX()));
-        VISIONCONE.setRotation(angle);
-        enemy.setRotation(angle);
+        Point2D directionToPlayer = player.getPosition().subtract(enemy.getPosition()).normalize();
+        double angleToPlayer = Math.toDegrees(Math.atan2(directionToPlayer.getY(), directionToPlayer.getX()));
+
+        rotationTimer += tpf;
+        if (rotationTimer >= 0.01) {
+            additionalRotation += rotationDirection * 60 * tpf;
+            rotationTimer = 0;
+            if (additionalRotation >= 360 || additionalRotation <= -360) {
+                additionalRotation %= 360;
+            }
+        }
+
+        // Setze die Position des VISIONCONE so, dass die Spitze in der Mitte des enemy ist
+        double coneBaseX = enemy.getX() + enemy.getWidth() / 2 - 0; // Da die Spitze bei (0,0) ist, brauchen wir keine weitere Anpassung
+        double coneBaseY = enemy.getY() + enemy.getHeight() / 2;
+        VISIONCONE.setPosition(coneBaseX, coneBaseY);
+
+        // Rotation anwenden
+        VISIONCONE.setRotation(angleToPlayer + additionalRotation);
+    }
+
+    @Override
+    protected void initPhysics() {
+        FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.PLAYER, EntityType.VISIONCONE) {
+            @Override
+            protected void onCollisionBegin(Entity player, Entity visionCone) {
+                FXGL.getDialogService().showMessageBox("Entdeckt! Das Spiel ist vorbei.", FXGL.getGameController()::exit);
+            }
+        });
     }
 
     //launches the application
