@@ -6,6 +6,8 @@ module at.game.hideandseekgame {
     requires com.almasb.fxgl.all;
     requires annotations;
 
-    opens at.game.hideandseekgame to javafx.fxml;
-    exports at.game.hideandseekgame;
+    exports at.game.hideandseekgame.GameOne;
+    opens at.game.hideandseekgame.GameOne to javafx.fxml;
+    exports at.game.hideandseekgame.GameTwo;
+    opens at.game.hideandseekgame.GameTwo to javafx.fxml;
 }

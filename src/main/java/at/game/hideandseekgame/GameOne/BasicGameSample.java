@@ -1,4 +1,4 @@
-package at.game.hideandseekgame;
+package at.game.hideandseekgame.GameOne;
 
 import com.almasb.fxgl.achievement.Achievement;
 import com.almasb.fxgl.app.GameApplication;
@@ -8,18 +8,18 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
+import com.almasb.fxgl.physics.PhysicsComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
-import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Random;
+
 
 public class BasicGameSample extends GameApplication {
     private Entity player;
@@ -64,8 +64,9 @@ public class BasicGameSample extends GameApplication {
         enemy = FXGL.entityBuilder()
                 .type(EntityType.ENEMY)
                 .at(100, 100)
-                .viewWithBBox(new Circle(10, Color.RED))
-                .with(new CollidableComponent(true))
+                .view(new Circle(10, Color.RED))
+                .with(new CollidableComponent(false))
+                .with(new PhysicsComponent())
                 .collidable()
                 .buildAndAttach();
 
@@ -79,6 +80,9 @@ public class BasicGameSample extends GameApplication {
                 .with(new CollidableComponent(true))
                 .collidable()
                 .buildAndAttach();
+
+
+
 
         pickNewTarget();
     }
@@ -111,6 +115,7 @@ public class BasicGameSample extends GameApplication {
         target = new Point2D(rand.nextInt(800), rand.nextInt(600));
     }
 
+
     @Override
     protected void onUpdate(double tpf) {
         if (target != null && enemy.getPosition().distance(target) < 5) {
@@ -120,25 +125,20 @@ public class BasicGameSample extends GameApplication {
         Point2D directionToTarget = target.subtract(enemy.getPosition()).normalize().multiply(100 * tpf);
         enemy.translate(directionToTarget);
 
-        Point2D directionToPlayer = player.getPosition().subtract(enemy.getPosition()).normalize();
-        double angleToPlayer = Math.toDegrees(Math.atan2(directionToPlayer.getY(), directionToPlayer.getX()));
-
         rotationTimer += tpf;
-        if (rotationTimer >= 0.01) {
-            additionalRotation += rotationDirection * 60 * tpf;
+        if (rotationTimer >= 0.001) {
+            additionalRotation += rotationDirection * 30 * tpf;  // Halbiert die Drehgeschwindigkeit
             rotationTimer = 0;
             if (additionalRotation >= 360 || additionalRotation <= -360) {
                 additionalRotation %= 360;
             }
         }
 
-        // Setze die Position des VISIONCONE so, dass die Spitze in der Mitte des enemy ist
-        double coneBaseX = enemy.getX() + enemy.getWidth() / 2 - 0; // Da die Spitze bei (0,0) ist, brauchen wir keine weitere Anpassung
+        double coneBaseX = enemy.getX() + enemy.getWidth() / 2 - 0;
         double coneBaseY = enemy.getY() + enemy.getHeight() / 2;
         VISIONCONE.setPosition(coneBaseX, coneBaseY);
 
-        // Rotation anwenden
-        VISIONCONE.setRotation(angleToPlayer + additionalRotation);
+        VISIONCONE.setRotation(additionalRotation);
     }
 
     @Override

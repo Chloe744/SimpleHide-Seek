@@ -1,4 +1,4 @@
-package at.game.hideandseekgame;
+package at.game.hideandseekgame.GameOne;
 
 public enum EntityType {
     PLAYER, ENEMY, VISIONCONE
