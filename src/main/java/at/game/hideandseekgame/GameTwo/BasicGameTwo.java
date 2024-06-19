@@ -1,9 +1,11 @@
 package at.game.hideandseekgame.GameTwo;
 
 import com.almasb.fxgl.achievement.Achievement;
+import com.almasb.fxgl.app.CursorInfo;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.MenuItem;
+import com.almasb.fxgl.core.asset.AssetLoaderService;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
@@ -22,7 +24,6 @@ public class BasicGameTwo extends GameApplication  {
     private Entity playerOne;
     private Entity playerTwo;
     private Random rand = new Random();
-    private Map<Entity, Point2D> visionConeTargets = new HashMap<>();
     private Map<Entity, Point2D> visionConeMovements = new HashMap<>();
     private Text spawnTimer;
     private Duration nextSpawnTime = Duration.seconds(5);
@@ -46,11 +47,8 @@ public class BasicGameTwo extends GameApplication  {
                 "Karo - Programmer",
                 "André - Programmer"
         ));
-
-
+        settings.setDefaultCursor(new CursorInfo("maus.png", 0, 0));
     }
-
-
 
     //initialises the input
     @Override
