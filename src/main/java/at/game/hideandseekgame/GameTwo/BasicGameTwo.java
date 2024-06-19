@@ -1,15 +1,14 @@
 package at.game.hideandseekgame.GameTwo;
 
-import com.almasb.fxgl.achievement.Achievement;
 import com.almasb.fxgl.app.CursorInfo;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.MenuItem;
-import com.almasb.fxgl.core.asset.AssetLoaderService;
+import com.almasb.fxgl.core.serialization.Bundle;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.physics.CollisionHandler;
+import com.almasb.fxgl.profile.DataFile;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -18,6 +17,10 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 
 public class BasicGameTwo extends GameApplication  {
@@ -29,7 +32,6 @@ public class BasicGameTwo extends GameApplication  {
     private Duration nextSpawnTime = Duration.seconds(5);
     private Text winCounterText;
     private Text winnerText;
-
     private int winCountPlayerOne = 0;
     private int winCountPlayerTwo = 0;
 
@@ -49,7 +51,7 @@ public class BasicGameTwo extends GameApplication  {
                 "Karo - Programmer",
                 "André - Programmer"
         ));
-        settings.setDefaultCursor(new CursorInfo("maus.png", 0, 0));
+        settings.setDefaultCursor(new CursorInfo("glassmain.png", 0, 0));
     }
 
     //initialises the input
