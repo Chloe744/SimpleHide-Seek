@@ -33,6 +33,8 @@ public class BasicGameTwo extends GameApplication  {
     private int winCountPlayerOne = 0;
     private int winCountPlayerTwo = 0;
 
+
+
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(800);
